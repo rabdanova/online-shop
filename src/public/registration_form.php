@@ -11,22 +11,34 @@
     <div class="title">
         Register
     </div>
-    <form action="handle_registration_form.php" >
+    <form action="handle_registration_form.php" method="POST">
         <div class="field">
-            <input type="text" name="username" id = "username" required>
+            <input type="text" name= "username" id = "username" required>
             <label>Username</label>
+            <?php if (isset($errors['username'])): ?>
+            <?php echo $errors['username'] ?>
+            <?php  endif;?>
         </div>
         <div class="field">
             <input type="text"  name="email" id = "email" required>
             <label>Email Address</label>
+            <?php if (isset($errors['email'])): ?>
+            <?php echo $errors['email'] ?>
+            <?php  endif;?>
         </div>
         <div class="field">
-            <input type="password"  name="password" id = "password"required>
+            <input type="password"  name="password" id = "password" required>
             <label>Password</label>
+            <?php if (isset($errors['password'])): ?>
+             <?php echo $errors['password'] ?>
+            <?php  endif;?>
         </div>
         <div class="field">
-            <input type="password"  name="repeat-pas" id = "repeat-pas"required>
+            <input type="password"  name="repeat-pas" id = "repeat-pas" required>
             <label>Repeat password</label>
+            <?php if (isset($errors['repeat-pas'])): ?>
+            <?php echo $errors['repeat-pas'] ?>
+            <?php  endif;?>
         </div>
         <div class="content">
             <div class="checkbox">
