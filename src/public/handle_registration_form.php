@@ -1,83 +1,113 @@
 <?php
-
-$name = $_POST['username'];
-$email = $_POST['email'];
-$password = $_POST['password'];
-$repeat_password = $_POST['repeat-pas'];
-
-
-function IsValidData():array
+function IsValidData(array $data):array
 {
     $errors = [];
 
-    if (isset($_POST['username']))
-    {
-        $name = $_POST['username'];
-        if ((strlen($name) <= 3)) {
-            $errors['username'] = 'Недопустимая длина имени';
-        }
-    } else {
-        $errors['username'] = 'Введите имя пользователя';
+    $errorName = ValidateName($data);
+    if (!empty($errorName)) {
+        $errors['name'] = $errorName;
     }
 
-
-    if (isset($_POST['email']))
-    {
-        $email = $_POST['email'];
-
-        if (strlen($email) <= 4) {
-            $errors['email'] = 'Слишком короткий почтовый адрес';
-        } elseif (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-            $errors['email'] = 'Добавьте си мвол @';
-        }
-    } else {
-        $errors['email'] = 'Введите почту пользователя';
+    $errorEmail = ValidateEmail($data);
+    if (!empty($errorEmail)) {
+        $errors['email'] = $errorEmail;
     }
 
-
-    if (isset($_POST['password']))
-    {
-        $password = $_POST['password'];
-
-        if (strlen($password) <= 5) {
-            $errors['password'] = 'Недопустимая длина пароля';
-        }
-    } else {
-        $errors['password'] = 'Введите пароль пользователя';
-    }
-
-
-    if (isset($_POST['repeat-pas']))
-    {
-        $repeat_password = $_POST['repeat-pas'];
-
-        if ($repeat_password !== $password) {
-            $errors['repeat-pas'] = 'Пароли не совпадают';
-        }
-    } else {
-        $errors['repeat-pas'] = 'Введите пароль пользователя';
+    $errorPassword = ValidatePassword($data);
+    if (!empty($errorPassword)) {
+        $errors['password'] = $errorPassword;
     }
 
     return $errors;
 }
 
+function ValidateName(array $data):null|string
+{
+    if (isset($data['username']))
+    {
+        $name = $data['username'];
+        if ((strlen($name) <= 3)) {
+            return 'Недопустимая длина имени';
+        } else {
+            return NULL;
+        }
 
-$errors = IsValidData();
+    } else {
+        return 'Введите имя пользователя';
+    }
+}
+
+function ValidateEmail(array $data):null|string
+{
+    $message = null;
+
+    if (isset($data['email'])) {
+
+        $email = $data['email'];
+
+        if (strlen($email) <= 4) {
+            $message =  'Слишком короткий почтовый адрес';
+
+        } elseif (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            $message = 'Неправильный формат email';
+        } else {
+            $pdo = new PDO('pgsql:host=postgres; port = 5432;dbname=mydb', 'user', 'pass');
+            $stmt = $pdo->prepare("select count(*) from users where email = :email");
+            $stmt->execute(['email' => $email]);
+            $count = $stmt->fetchColumn();
+            if ($count > 0) {
+                $message = "Данный email уже зарегистрирован";
+            }
+        }
+    } else {
+        $message = 'Введите email';
+    }
+
+    return $message;
+}
+function ValidatePassword(array $data):string|null
+{
+    $message = null;
+
+    if (isset($data['password'])) {
+        $password = $data['password'];
+
+        if (strlen($password) <= 5) {
+            $message = 'Недопустимая длина пароля';
+        }
+        if (isset($data['repeat-pas'])) {
+            $repeat_password = $data['repeat-pas'];
+
+            if ($repeat_password !== $password) {
+                $message = 'Пароли не совпадают';
+            }
+        }
+
+
+    } else {
+        $message = 'Недопустимая длина пароля';
+    }
+
+    return $message;
+}
+
+
+$errors = IsValidData($_POST);
 
     if (empty($errors)){
+        $name = $_POST['username'];
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+        $repeat_password = $_POST['repeat-pas'];
 
         $pdo = new PDO('pgsql:host=postgres; port = 5432;dbname=mydb', 'user', 'pass');
 
         $password = password_hash($password, PASSWORD_DEFAULT);
 
-        $result = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)");
-        $result->execute(['name' => $name, 'email' => $email, 'password' => $password]);
+        $res = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)");
+        $res->execute(['name' => $name, 'email' => $email, 'password' => $password]);
 
-        $res2 = $pdo->prepare("select * from users where email = :email");
-        $res2->execute(['email' => $email]);
-
-        $data = $res2->fetch();
-        print_r($data);
+        header("location: /login.php");
     }
 
 require_once './registration_form.php';

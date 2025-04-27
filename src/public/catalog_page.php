@@ -1,3 +1,6 @@
+<form action="user_profile_form.php">
+    <button type="submit">Профиль</button>
+</form>
 <div class="container">
     <h3>Catalog</h3>
     <div class="card-deck">

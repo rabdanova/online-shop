@@ -1,15 +1,29 @@
 <?php
+function validate(array $data): array
+{
+    $errors = [];
 
-$username = $_POST["username"];
-$password = $_POST["password"];
+    if (!isset($data['username'])) {
+        $errors['username'] = 'Username is required';
+    }
+    if (!isset($data['password'])) {
+        $errors['password'] = 'Password is required';
+    }
+    return $errors;
+}
 
-$pdo = new PDO('pgsql:host=postgres; port = 5432;dbname=mydb', 'user', 'pass');
+$errors = validate($_POST);
 
-$stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
-$stmt->execute(['email' => $username]);
-$user = $stmt->fetch();
+if (empty($errors)) {
 
-$errors = [];
+    $username = $_POST["username"];
+    $password = $_POST["password"];
+
+    $pdo = new PDO('pgsql:host=postgres; port = 5432;dbname=mydb', 'user', 'pass');
+
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
+    $stmt->execute(['email' => $username]);
+    $user = $stmt->fetch();
 
     if ($user === false) {
         $errors['username'] = "Username or password is incorrect";
@@ -21,9 +35,12 @@ $errors = [];
             $_SESSION['user_id'] = $user['id'];
 
             header('Location: /catalog.php');
+
         } else {
             $errors['username'] = "Username or password is incorrect";
         }
     }
+}
+
 
 require_once './login_form.php';
