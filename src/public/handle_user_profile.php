@@ -4,41 +4,37 @@ session_start();
 if (!isset($_SESSION['user_id'])) {
     header("Location: /login_form.php");
     exit;
-} else {
-    $userId = $_SESSION['user_id'];
-    $pdo = new PDO('pgsql:host=postgres;port=5432;dbname=mydb', 'user', 'pass');
-    $stmt = $pdo->prepare("SELECT name, email, password FROM users WHERE id = :id");
-    $stmt->execute(['id' => $userId]);
-    $user = $stmt->fetch();
-
-    if (empty($user)) {
-        die('Пользователь не найден');
-    }
 }
 
 function ValidateData(array $data):array
 {
     $errors = [];
 
-    $errorName = ValidateName($data);
-    if (!empty($errorName)) {
-        $errors['username'] = $errorName;
+    if (isset($data['username']) && $data['username'] != '') {
+        $errorName = ValidateName($data);
+        if (!empty($errorName)) {
+            $errors['username'] = $errorName;
+        }
+    }
+    if (isset($data['email']) && $data['email'] != '') {
+        $errorEmail = ValidateEmail($data);
+        if (!empty($errorEmail)) {
+            $errors['email'] = $errorEmail;
+        }
     }
 
-    $errorEmail = ValidateEmail($data);
-    if (!empty($errorEmail)) {
-        $errors['email'] = $errorEmail;
+    if (isset($data['new_password']) && $data['new_password'] != '') {
+        $errorPassword = ValidateOldPassword($data);
+        if (!empty($errorPassword)) {
+            $errors['old_password'] = $errorPassword;
+        }
     }
 
-
-    $errorPassword = ValidateOldPassword($data);
-    if (!empty($errorPassword)){
-        $errors['old_password'] = $errorPassword;
-    }
-
-    $errorNewPassword = ValidateNewPassword($data);
-    if (!empty($errorNewPassword)) {
-        $errors['new_password'] = $errorNewPassword;
+    if (isset($data['new_password']) && $data['new_password'] != '') {
+        $errorNewPassword = ValidateNewPassword($data);
+        if (!empty($errorNewPassword)) {
+            $errors['new_password'] = $errorNewPassword;
+        }
     }
 
     return $errors;
@@ -147,16 +143,24 @@ $errors = ValidateData($_POST);
 
         $pdo = new PDO('pgsql:host=postgres; port = 5432;dbname=mydb', 'user', 'pass');
 
-        $hashedPassword = password_hash($new_password, PASSWORD_DEFAULT);
+        if (isset($name) && ($name !== '')) {
+            $stmt = $pdo->prepare("UPDATE users SET name = :name where id = :id");
+            $stmt->execute(['name' => $name, 'id' => $userId]);
+            echo 'Имя пользователя успешно изменено'."\n";
+        }
 
-        $result = $pdo->prepare("UPDATE users SET name = :name, email =:email, password = :password where id = :id");
-        $result->execute(['name' => $name, 'email' => $email, 'password' => $hashedPassword, 'id' => $userId]);
+        if (isset($email) && ($email !== '')) {
+            $stmt = $pdo->prepare("UPDATE users SET email = :email where id = :id");
+            $stmt->execute(['email' => $email, 'id' => $userId]);
+            echo 'Email успешно изменен'."\n";
+        }
 
-        $stmt = $pdo->prepare("select * from users where email = :email");
-        $stmt->execute([':email' => $email]);
-
-        $result = $stmt->fetch();
-        print_r($result);
+        if (!empty($new_password)) {
+            $hashedPassword = password_hash($new_password, PASSWORD_DEFAULT);
+            $stmt = $pdo->prepare("UPDATE users SET password = :password where id = :id");
+            $stmt->execute(['password' => $hashedPassword, 'id' => $userId]);
+            echo 'Пароль успешно изменен'."\n";
+        }
 
     } else {
         print_r($errors);
