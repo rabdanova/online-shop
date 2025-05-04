@@ -107,7 +107,7 @@ $errors = IsValidData($_POST);
         $res = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)");
         $res->execute(['name' => $name, 'email' => $email, 'password' => $password]);
 
-        header("location: /login_form.php");
+        header("location: /login");
     }
 
 require_once './registration_form.php';

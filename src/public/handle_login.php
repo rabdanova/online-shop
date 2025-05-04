@@ -34,7 +34,7 @@ if (empty($errors)) {
             session_start();
             $_SESSION['user_id'] = $user['id'];
 
-            header('Location: /catalog.php');
+            header('Location: /catalog');
 
         } else {
             $errors['username'] = "Username or password is incorrect";

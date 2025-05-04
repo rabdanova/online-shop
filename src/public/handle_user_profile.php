@@ -2,7 +2,7 @@
 session_start();
 // Проверяем, что пользователь авторизован
 if (!isset($_SESSION['user_id'])) {
-    header("Location: /login_form.php");
+    header("Location: /login");
     exit;
 }
 

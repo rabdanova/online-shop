@@ -59,7 +59,7 @@
                             </div>
                             <div class="tab-pane fade" id="contact">
                                 <p></p>
-                                <form action="handle_user_profile.php" method="post">
+                                <form action="profile" method="post">
                                     <div class="form-group">
                                         <label>Ваше имя</label>
                                         <input type="text" class="form-control rounded" placeholder="Укажите Ваше Имя" name= "username" id = "username">

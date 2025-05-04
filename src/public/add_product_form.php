@@ -9,49 +9,27 @@
 <body>
 <div class="wrapper">
     <div class="title">
-        Register
+        Add product
     </div>
-    <form action='registration' method="POST">
+    <form action='add_product' method="POST">
         <div class="field">
-            <input type="text" name= "username" id = "username" required>
-            <label>Username</label>
-            <?php if (isset($errors['username'])): ?>
-            <?php echo $errors['username'] ?>
+            <input type="text" name= "product_id" id = "product_id" required>
+            <label>Product_id</label>
+            <?php if (isset($errors['product_id'])): ?>
+                <?php echo $errors['product_id'] ?>
             <?php  endif;?>
         </div>
         <div class="field">
-            <input type="text"  name="email" id = "email" required>
-            <label>Email Address</label>
-            <?php if (isset($errors['email'])): ?>
-            <?php echo $errors['email'] ?>
+            <input type="text"  name="amount" id = "amount" required>
+            <label>Amount</label>
+            <?php if (isset($errors['amount'])): ?>
+                <?php echo $errors['amount'] ?>
             <?php  endif;?>
         </div>
         <div class="field">
-            <input type="password"  name="password" id = "password" required>
-            <label>Password</label>
-            <?php if (isset($errors['password'])): ?>
-             <?php echo $errors['password'] ?>
-            <?php  endif;?>
+            <input type="submit" value="Confirm">
         </div>
-        <div class="field">
-            <input type="password"  name="repeat-pas" id = "repeat-pas" required>
-            <label>Repeat password</label>
-            <?php if (isset($errors['repeat-pas'])): ?>
-            <?php echo $errors['repeat-pas'] ?>
-            <?php  endif;?>
-        </div>
-        <div class="content">
-            <div class="checkbox">
-                <input type="checkbox" id="remember-me">
-                <label for="remember-me">Remember me</label>
-            </div>
-        </div>
-        <div class="field">
-            <input type="submit" value="Register">
-        </div>
-        <div class="signup-link">
-            Already have an account? <a href="#">Sign in</a>
-        </div>
+
     </form>
 </div>
 </body>
