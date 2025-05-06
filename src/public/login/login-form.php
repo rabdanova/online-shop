@@ -6,7 +6,7 @@
             <img src="https://raw.githubusercontent.com/hicodersofficial/glassmorphism-login-form/master/assets/illustration.png" alt="illustration" class="illustration" />
             <h1 class="opacity">LOGIN</h1>
 
-            <form action="login" method="POST">
+            <form action="" method="POST">
                 <input type="text" placeholder="USERNAME" name= "username" id = "username" required>
                 <?php if (isset($errors['username'])): ?>
                     <?php echo $errors['username'] ?>

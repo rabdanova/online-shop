@@ -3,17 +3,17 @@ function IsValidData(array $data):array
 {
     $errors = [];
 
-    $errorName = ValidateName($data);
+    $errorName = validateName($data);
     if (!empty($errorName)) {
         $errors['name'] = $errorName;
     }
 
-    $errorEmail = ValidateEmail($data);
+    $errorEmail = validateEmail($data);
     if (!empty($errorEmail)) {
         $errors['email'] = $errorEmail;
     }
 
-    $errorPassword = ValidatePassword($data);
+    $errorPassword = validatePassword($data);
     if (!empty($errorPassword)) {
         $errors['password'] = $errorPassword;
     }
@@ -21,7 +21,7 @@ function IsValidData(array $data):array
     return $errors;
 }
 
-function ValidateName(array $data):null|string
+function validateName(array $data):null|string
 {
     if (isset($data['username']))
     {
@@ -37,7 +37,7 @@ function ValidateName(array $data):null|string
     }
 }
 
-function ValidateEmail(array $data):null|string
+function validateEmail(array $data):null|string
 {
     $message = null;
 
@@ -65,7 +65,7 @@ function ValidateEmail(array $data):null|string
 
     return $message;
 }
-function ValidatePassword(array $data):string|null
+function validatePassword(array $data):string|null
 {
     $message = null;
 
@@ -76,9 +76,9 @@ function ValidatePassword(array $data):string|null
             $message = 'Недопустимая длина пароля';
         }
         if (isset($data['repeat-pas'])) {
-            $repeat_password = $data['repeat-pas'];
+            $repeatPassword = $data['repeat-pas'];
 
-            if ($repeat_password !== $password) {
+            if ($repeatPassword !== $password) {
                 $message = 'Пароли не совпадают';
             }
         }
@@ -92,13 +92,13 @@ function ValidatePassword(array $data):string|null
 }
 
 
-$errors = IsValidData($_POST);
+$errors = isValidData($_POST);
 
     if (empty($errors)){
         $name = $_POST['username'];
         $email = $_POST['email'];
         $password = $_POST['password'];
-        $repeat_password = $_POST['repeat-pas'];
+        $repeatPassword = $_POST['repeat-pas'];
 
         $pdo = new PDO('pgsql:host=postgres; port = 5432;dbname=mydb', 'user', 'pass');
 
@@ -110,7 +110,7 @@ $errors = IsValidData($_POST);
         header("location: /login");
     }
 
-require_once './registration_form.php';
+require_once './registration/registration-form.php';
     ?>
 
 

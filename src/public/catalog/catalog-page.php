@@ -1,5 +1,5 @@
-<a href="profile">Профиль</a>
-<a href="cart">Корзина</a>
+<a href="./profile">Профиль</a>
+<a href="./cart">Корзина</a>
 <div class="container">
     <h3>Каталог</h3>
     <div class="card-deck">

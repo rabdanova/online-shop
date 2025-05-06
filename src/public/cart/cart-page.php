@@ -1,25 +1,27 @@
-<a href="profile">Профиль</a>
+<a href="./profile">Профиль</a>
+<a href="./add-product">Добавление товаров</a>
+<a href="./catalog">Каталог</a>
 <div class="container">
     <h3>Корзина</h3>
     <div class="card-deck">
         <?php foreach ($cart as $products): ?>
-        <?php foreach ($products as $product): ?>
+<!--        --><?php //foreach ($products as $product): ?>
             <div class="card text-center">
                 <a href="#">
                     <div class="card-header">
                         Hit!
                     </div>
-                    <img class="card-img-top" src="<?php echo $product['image_url'];?>" alt="Card image" height="480" width="480">
+                    <img class="card-img-top" src="<?php echo $products['image_url'];?>" alt="Card image" height="480" width="480">
                     <div class="card-body">
-                        <p class="card-text text-muted"><?php echo $product['name'];?></p>
-                        <a href="#"><h5 class="card-title"><?php echo $product['description'];?></h5></a>
+                        <p class="card-text text-muted"><?php echo $products['name'];?></p>
+                        <a href="#"><h5 class="card-title"><?php echo $products['description'];?></h5></a>
                         <div class="card-footer">
-                            <?php echo $product['price'];?>
+                            <?php echo $products['price'];?>
                         </div>
                     </div>
                 </a>
             </div>
-            <?php endforeach; ?>
+<!--            --><?php //endforeach; ?>
         <?php endforeach; ?>
     </div>
 </div>

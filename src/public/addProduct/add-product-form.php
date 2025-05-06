@@ -11,7 +11,7 @@
     <div class="title">
         Add product
     </div>
-    <form action='add_product' method="POST">
+    <form action='add-product' method="POST">
         <div class="field">
             <input type="text" name= "product_id" id = "product_id" required>
             <label>Product_id</label>
