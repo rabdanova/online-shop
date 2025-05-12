@@ -4,54 +4,67 @@ $requestUri = $_SERVER['REQUEST_URI'];
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 print_r($requestUri,$requestMethod);
 if ($requestUri === '/registration') {
+    require_once './classes/User.php';
+    $user = new User();
     if ($requestMethod === 'GET') {
-        require_once './registration/registration-form.php';
+        $user->getRegistrate();
     } elseif ($requestMethod === 'POST') {
-        require_once './registration/handle-registration-form.php';
+//        require_once './classes/User.php';
+        $user->registrate();
     } else {
         echo "$requestMethod для адреса $requestUri не поддерживается";
     }
 } elseif ($requestUri === '/login') {
+    require_once './classes/User.php';
+    $user = new User();
     if ($requestMethod === 'GET') {
-        require_once './login/login-form.php';
+        $user->getLogin();
     } elseif ($requestMethod === 'POST') {
-        require_once './login/handle-login.php';
+       $user->login();
     } else {
         echo "$requestMethod для адреса $requestUri не поддерживается";
     }
 }  elseif ($requestUri === '/catalog') {
+    require_once './classes/Product.php';
+    $product = new Product();
     if ($requestMethod === 'GET') {
-        require_once './catalog/catalog.php';
+        $product->catalog();
     } else {
         echo "$requestMethod для адреса $requestUri не поддерживается";
     }
 }   elseif ($requestUri === '/profile') {
+    require_once './classes/User.php';
+    $user = new User();
     if ($requestMethod === 'GET') {
-        require_once './profile/profile-page.php';
-    } elseif ($requestMethod === 'POST') {
-        require_once './profile/profile.php';
+        $user->profile();
     } else {
         echo "$requestMethod для адреса $requestUri не поддерживается";
     }
 }  elseif ($requestUri === '/editProfile') {
+    require_once './classes/User.php';
+    $user = new User();
     if ($requestMethod === 'GET') {
-        require_once './editProfile/edit-profile-form.php';
+        $user->getEditForm();
     } elseif ($requestMethod === 'POST') {
-        require_once './editProfile/handle-edit-profile.php';
+        $user->editProfile();
     } else {
         echo "$requestMethod для адреса $requestUri не поддерживается";
     }
 } elseif ($requestUri === '/add-product') {
+    require_once './classes/Product.php';
+    $product = new Product();
     if ($requestMethod === 'GET') {
-        require_once './addProduct/add-product-form.php';
+        $product->getAddProductForm();
     } elseif ($requestMethod === 'POST') {
-        require_once './addProduct/handle-add-product.php';
+        $product->addProduct();
     } else {
         echo "$requestMethod для адреса $requestUri не поддерживается";
     }
 } elseif ($requestUri === '/cart') {
+    require_once './classes/Product.php';
+    $product = new Product();
     if ($requestMethod === 'GET') {
-        require_once './cart/cart.php';
+        $product->cart();
     } else {
         echo "$requestMethod для адреса $requestUri не поддерживается";
     }

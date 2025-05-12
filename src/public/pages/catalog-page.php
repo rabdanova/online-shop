@@ -19,9 +19,38 @@
                 </div>
             </a>
         </div>
+            <!-- Created By CodingNepal -->
+            <html lang="en" dir="ltr">
+            <head>
+                <meta charset="utf-8">
+                <title>test html</title>
+                <link rel="stylesheet" href="style.css">
+            </head>
+            <body>
+                <form action='add-product' method="POST">
+                    <div class="field">
+                        <input type="hidden" name= "product_id" value = "<?php echo $product['id']; ?> "id = "product_id" required>
+                    </div>
+                    <div class="field">
+                        <input type="text"  name="amount" id = "amount" required>
+                        <label>Amount</label>
+                        <?php if (isset($errors['amount'])): ?>
+                            <?php echo $errors['amount'] ?>
+                        <?php  endif;?>
+                    </div>
+                    <div class="field">
+                        <input type="submit" value="Confirm">
+                    </div>
+
+                </form>
+            </div>
+            </body>
+            </html>
         <?php endforeach; ?>
     </div>
 </div>
+
+
 <style>
     body {
         font-family: 'Poppins', sans-serif;
