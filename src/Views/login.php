@@ -18,7 +18,7 @@
                 <button class="opacity">SUBMIT</button>
             </form>
             <div class="register-forget opacity">
-                <a href="">REGISTER</a>
+                <a href="registration">REGISTER</a>
                 <a href="">FORGOT PASSWORD</a>
             </div>
         </div>

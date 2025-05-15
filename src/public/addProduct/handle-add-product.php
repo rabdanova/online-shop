@@ -88,5 +88,5 @@ if (empty($errors)) {
     header("Location: catalog");
 
 } else {
-    require_once './addProduct/add-product-form.php';
+    require_once './addProduct/add-product.php';
 }

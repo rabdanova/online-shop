@@ -1,5 +1,4 @@
 <a href="./profile">Профиль</a>
-<a href="./add-product">Добавление товаров</a>
 <a href="./catalog">Каталог</a>
 <div class="container">
     <h3>Корзина</h3>
@@ -8,8 +7,6 @@
 <!--        --><?php //foreach ($products as $product): ?>
             <div class="card text-center">
                 <a href="#">
-                    <div class="card-header">
-                        Hit!
                     </div>
                     <img class="card-img-top" src="<?php echo $products['image_url'];?>" alt="Card image" height="480" width="480">
                     <div class="card-body">
@@ -18,6 +15,7 @@
                         <div class="card-footer">
                             <?php echo $products['price'];?>
                         </div>
+                    <div> Количество: <?php echo $products['amount']; ?></div>
                     </div>
                 </a>
             </div>

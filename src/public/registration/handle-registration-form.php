@@ -110,7 +110,7 @@ $errors = isValidData($_POST);
         header("location: /login");
     }
 
-require_once './registration/registration-form.php';
+require_once './registration/registration.php';
     ?>
 
 

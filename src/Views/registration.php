@@ -50,7 +50,7 @@
             <input type="submit" value="Register">
         </div>
         <div class="signup-link">
-            Already have an account? <a href="#">Sign in</a>
+            Already have an account? <a href="login">Sign in</a>
         </div>
     </form>
 </div>

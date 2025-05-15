@@ -33,7 +33,7 @@
                     </div>
                     <div class="field">
                         <input type="text"  name="amount" id = "amount" required>
-                        <label>Amount</label>
+                        <label>Количество</label>
                         <?php if (isset($errors['amount'])): ?>
                             <?php echo $errors['amount'] ?>
                         <?php  endif;?>

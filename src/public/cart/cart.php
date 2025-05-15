@@ -26,4 +26,4 @@ foreach ($data as $product) {
 //echo "<pre>";
 //print_r($cart);
 //exit;
-require_once './cart/cart-page.php';
+require_once './cart/cart.php';
