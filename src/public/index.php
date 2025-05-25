@@ -12,7 +12,6 @@ $autoload = function (string $className) {
 };
 
 spl_autoload_register($autoload);
-require_once '../Core/App.php';
 
 $app = new Core\App();
 $app->run();
