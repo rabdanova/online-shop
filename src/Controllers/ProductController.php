@@ -1,5 +1,6 @@
 <?php
-
+namespace Controllers;
+use Model\Product;
 class ProductController
 {
     public function getAddProductForm()
@@ -16,7 +17,7 @@ class ProductController
             exit;
         }
 
-        require_once "../Model/Product.php";
+
         $productModel = new Product();
         $products = $productModel->getAllProducts();
 
@@ -40,7 +41,7 @@ class ProductController
             $productId = $_POST["product_id"];
             $userId = $_SESSION["user_id"];
 
-            require_once "../Model/Product.php";
+
             $productModel = new Product();
             $result = $productModel->getByTwoId($userId, $productId);
 
@@ -81,7 +82,7 @@ class ProductController
             $productId = $data['product_id'];
 
             if (is_numeric($productId)) {
-                require_once "../Model/Product.php";
+
                 $productModel = new Product();
                 $result = $productModel->getByProductId($productId);
 

@@ -1,4 +1,6 @@
 <?php
+namespace Controllers;
+use Model\User;
 
 class UserController
 {
@@ -27,12 +29,14 @@ class UserController
             $password = $_POST['password'];
 
             $password = password_hash($password, PASSWORD_DEFAULT);
-            require_once "../Model/User.php";
+
             $userModel = new User();
             $userModel->insertData($name,$email,$password);
 
 
             header("location: /login");
+        } else {
+            print_r($errors);
         }
     }
 
@@ -45,7 +49,6 @@ class UserController
             $email = $_POST["username"];
             $password = $_POST["password"];
 
-            require_once "../Model/User.php";
             $userModel = new User();
             $user = $userModel->getByEmail($email);
 
@@ -78,7 +81,6 @@ class UserController
 
         $userId = $_SESSION['user_id'];
 
-        require_once "../Model/User.php";
         $userModel = new User();
         $user = $userModel->getById($userId);
 
@@ -104,7 +106,7 @@ class UserController
             $newPassword = $_POST['new_password'];
             $userId = $_SESSION['user_id'];
 
-            require_once "../Model/User.php";
+
             $userModel = new User();
 
             if (isset($name) && ($name !== '')) {
@@ -126,6 +128,16 @@ class UserController
         } else {
             print_r($errors);
         }
+    }
+
+    public function logout()
+    {
+        session_start();
+        $_SESSION = [];
+        session_destroy();
+
+        header("Location: /login");
+        exit;
     }
 
     private function validateEditProfile(array $data): array
@@ -186,7 +198,7 @@ class UserController
                 return 'Неправильный формат email';
             } else {
                 // Проверка, что email не занят другим пользователем
-                require_once "../Model/User.php";
+
                 $userModel = new User();
                 $user = $userModel->getByEmail($email);
 
@@ -208,7 +220,7 @@ class UserController
             $old_password = $data['old_password'];
             $userId = $_SESSION['user_id'];
 
-            require_once "../Model/User.php";
+
             $userModel = new User();
             $userData = $userModel->getById($userId);
 
@@ -317,7 +329,7 @@ class UserController
             } elseif (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
                 $message = 'Неправильный формат email';
             } else {
-                require_once "../Model/User.php";
+
                 $userModel = new User();
                 $user = $userModel->getByEmail($email);
                 if ($user !== false) {

@@ -1,7 +1,11 @@
 <?php
-class Database
+
+namespace Model;
+use PDO;
+
+class Model
 {
-    protected PDO $pdo;
+    protected \PDO $pdo;
 
     public function getPDO():PDO
     {

@@ -2,7 +2,7 @@
 
 namespace Model;
 
-class Cart extends Model
+class UserProduct extends Model
 {
     public function getByUserId($userId):array
     {

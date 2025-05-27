@@ -54,6 +54,7 @@ if (isset($_SESSION['user_id'])) {
                             <li class=""><a href="#contact" data-toggle="tab">Личные данные</a></li>
                             <li class=""><a href="./catalog" >Каталог</a></li>
                             <li class=""><a href="./cart" >Корзина</a></li>
+                            <li class=""><a href="./logout" >Выйти</a></li>
                         </ul>
                         <div id="myTabContent" class="tab-content">
                             <hr>

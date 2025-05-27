@@ -1,5 +1,6 @@
 <a href="./profile">Профиль</a>
 <a href="./catalog">Каталог</a>
+<a href="./logout" >Выйти</a>
 <div class="container">
     <h3>Корзина</h3>
     <div class="card-deck">
@@ -21,6 +22,7 @@
             </div>
 <!--            --><?php //endforeach; ?>
         <?php endforeach; ?>
+    <a href="./create-order" >Заказать</a>
     </div>
 </div>
 <style>

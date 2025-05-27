@@ -2,7 +2,7 @@
 
 namespace Controllers;
 use Model\UserProduct;
-class CartController
+class UserProductController
 {
     public function cart()
     {
@@ -28,6 +28,6 @@ class CartController
             $cart[] = $result;
         }
 
-        require_once '../Views/cart.php';
+        require_once '../Views/userProducts.php';
     }
 }

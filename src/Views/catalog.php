@@ -1,23 +1,20 @@
 <a href="./profile">Профиль</a>
 <a href="./cart">Корзина</a>
+<a href="./my-orders">Мои заказы</a>
+<a href="./logout" >Выйти</a>
 <div class="container">
     <h3>Каталог</h3>
-    <div class="card-deck">
+    <div class="catalog">
         <?php foreach ($products as $product): ?>
-        <div class="card text-center">
-            <a href="#">
-                <div class="card-header">
-                    Hit!
-                </div>
+        <div class="card">
                 <img class="card-img-top" src="<?php echo $product['image_url'];?>" alt="Card image" height="480" width="480">
                 <div class="card-body">
                     <p class="card-text text-muted"><?php echo $product['name'];?></p>
                     <a href="#"><h5 class="card-title"><?php echo $product['description'];?></h5></a>
-                    <div class="card-footer">
+                    <div class="card-price">
                         <?php echo $product['price'];?>
                     </div>
                 </div>
-            </a>
         </div>
             <!-- Created By CodingNepal -->
             <html lang="en" dir="ltr">
@@ -41,15 +38,13 @@
                     <div class="field">
                         <input type="submit" value="Confirm">
                     </div>
-
                 </form>
-            </div>
-            </body>
-            </html>
-        <?php endforeach; ?>
+        </div>
+    <?php endforeach; ?>
     </div>
-</div>
 
+
+</div>
 
 <style>
     body {
