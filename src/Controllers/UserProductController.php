@@ -1,5 +1,7 @@
 <?php
 
+namespace Controllers;
+use Model\UserProduct;
 class CartController
 {
     public function cart()
@@ -11,8 +13,8 @@ class CartController
             exit;
         }
         $userId = $_SESSION['user_id'];
-        require_once "../Model/Cart.php";
-        $cartModel = new Cart();
+
+        $cartModel = new UserProduct();
         $data = $cartModel->getByUserId($userId);
 
         $cart = [];
