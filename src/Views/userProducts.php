@@ -9,14 +9,14 @@
             <div class="card text-center">
                 <a href="#">
                     </div>
-                    <img class="card-img-top" src="<?php echo $products['image_url'];?>" alt="Card image" height="480" width="480">
+                    <img class="card-img-top" src="<?php echo $products->getImageUrl();?>" alt="Card image" height="480" width="480">
                     <div class="card-body">
-                        <p class="card-text text-muted"><?php echo $products['name'];?></p>
-                        <a href="#"><h5 class="card-title"><?php echo $products['description'];?></h5></a>
+                        <p class="card-text text-muted"><?php echo $products->getName();?></p>
+                        <a href="#"><h5 class="card-title"><?php echo $products->getDescription();?></h5></a>
                         <div class="card-footer">
-                            <?php echo $products['price'];?>
+                            <?php echo $products->getPrice();?>
                         </div>
-                    <div> Количество: <?php echo $products['amount']; ?></div>
+                    <div> Количество: <?php echo $products->getAmount(); ?></div>
                     </div>
                 </a>
             </div>

@@ -21,7 +21,7 @@
                     <div class="panel-body">
                         <div class="text-center" id="author">
                             <img src="https://cs13.pikabu.ru/avatars/1008/x1008224-564930408.png">
-                            <h3><?php echo $user['name']; ?></h3>
+                            <h3><?php echo $user->getName(); ?></h3>
                             <small class="label label-warning">Российская Федерация</small>
                             <p>Расскажите о себе</p>
                             <p class="sosmed-author">
@@ -65,11 +65,11 @@
                                 <form action="" method="post">
                                     <div class="form-group">
                                         <label>Ваше имя</label>
-                                        <input type="text" class="form-control rounded" placeholder="Укажите Ваше Имя" name= "username" id = "username" value = <?php echo $user['name']; ?>>
+                                        <input type="text" class="form-control rounded" placeholder="Укажите Ваше Имя" name= "username" id = "username" value = <?php echo $user->getName(); ?>>
                                     </div>
                                     <div class="form-group">
                                         <label>E-mail адрес</label>
-                                        <input type="email" class="form-control rounded" placeholder="Ваш Е-майл" name= "email" id = "email" value = <?php echo $user['email']; ?>>
+                                        <input type="email" class="form-control rounded" placeholder="Ваш Е-майл" name= "email" id = "email" value = <?php echo $user->getEmail(); ?>>
                                     </div>
                                     <a href="./editProfile">Изменить данные</a>
                                     </div>

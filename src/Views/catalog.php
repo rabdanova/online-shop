@@ -7,12 +7,12 @@
     <div class="catalog">
         <?php foreach ($products as $product): ?>
         <div class="card">
-                <img class="card-img-top" src="<?php echo $product['image_url'];?>" alt="Card image" height="480" width="480">
+                <img class="card-img-top" src="<?php echo $product->getImageUrl();?>" alt="Card image" height="480" width="480">
                 <div class="card-body">
-                    <p class="card-text text-muted"><?php echo $product['name'];?></p>
-                    <a href="#"><h5 class="card-title"><?php echo $product['description'];?></h5></a>
+                    <p class="card-text text-muted"><?php echo $product->getName();?></p>
+                    <a href="#"><h5 class="card-title"><?php echo $product->getDescription();?></h5></a>
                     <div class="card-price">
-                        <?php echo $product['price'];?>
+                        <?php echo $product->getPrice();?>
                     </div>
                 </div>
         </div>
@@ -26,7 +26,7 @@
             <body>
                 <form action='add-product' method="POST">
                     <div class="field">
-                        <input type="hidden" name= "product_id" value = "<?php echo $product['id']; ?> "id = "product_id" required>
+                        <input type="hidden" name= "product_id" value = "<?php echo $product->getId(); ?> "id = "product_id" required>
                     </div>
                     <div class="field">
                         <input type="text"  name="amount" id = "amount" required>

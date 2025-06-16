@@ -29,47 +29,42 @@
 <body>
 <h1>Мои заказы</h1>
 
-<?php if (!empty($userOrderProducts)): ?>
-    <?php foreach ($userOrderProducts as $orderData): ?>
-        <h2>Заказ №<?= htmlspecialchars($orderData['order']['id']) ?> от <?= htmlspecialchars($orderData['order']['created_at'] ?? '') ?></h2>
-        <p><strong>Адрес:</strong> <?= htmlspecialchars($orderData['order']['address'] ?? '') ?></p>
-        <p><strong>Комментарий:</strong> <?= htmlspecialchars($orderData['order']['comment'] ?? '') ?></p>
+    <?php foreach ($newUserOrders as $newUserOrder): ?>
+        <h2>Заказ №<?php echo $newUserOrder->getId() ?></h2>
+        <p>Контактное имя:<?php echo $newUserOrder->getName()?></p>
+        <p>Контактный номер телефона:<?php echo $newUserOrder->getPhoneNumber()?></p>
+        <p>Адрес: <?php echo $newUserOrder->getAddress()?> </p>
+        <p>Комментарий:<?php echo $newUserOrder->getComment()?></p>
 
-        <?php if (!empty($orderData['products'])): ?>
             <table>
                 <thead>
                 <tr>
                     <th>Название товара</th>
+                    <th>Фото товара</th>
                     <th>Цена за единицу</th>
                     <th>Количество</th>
                     <th>Сумма</th>
                 </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($orderData['products'] as $product): ?>
+                <?php foreach ($newUserOrder->getProducts() as $newOrderProduct): ?>
                     <tr>
-                        <td><?= htmlspecialchars($product['name']) ?></td>
-                        <td><?= number_format($product['price'], 2, ',', ' ') ?> руб.</td>
-                        <td><?= (int)$product['amount'] ?></td>
-                        <td><?= number_format($product['sum'], 2, ',', ' ') ?> руб.</td>
+                        <td><?php echo $newOrderProduct->getName() ?></td>
+                        <td><img class="card-img-top" src="<?php echo $newOrderProduct->getImageUrl();?>" alt="Card image" height="160" width="160"></td>
+                        <td><?php echo $newOrderProduct->getPrice() ?></td>
+                        <td><?php echo $newOrderProduct->getAmount() ?></td>
+                        <td><?php echo $newOrderProduct->getTotalSum() ?></td>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>
                 <tfoot>
                 <tr>
                     <td colspan="3" style="text-align: right;"><strong>Итого:</strong></td>
-                    <td><strong><?= number_format($orderData['totalSum'], 2, ',', ' ') ?> руб.</strong></td>
+                    <td><?php echo $newUserOrder->getTotal()?> руб.</td>
                 </tr>
                 </tfoot>
             </table>
-        <?php else: ?>
-            <p>В этом заказе нет товаров.</p>
-        <?php endif; ?>
-
     <?php endforeach; ?>
-<?php else: ?>
-    <p>У вас пока нет заказов.</p>
-<?php endif; ?>
 
 </body>
 </html>

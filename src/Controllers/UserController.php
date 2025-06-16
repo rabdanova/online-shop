@@ -16,6 +16,16 @@ class UserController
 
     public function getEditForm()
     {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+        if (!isset($_SESSION['user_id'])) {
+            header("Location: /login");
+        }
+
+        $userId = $_SESSION['user_id'];
+        $userModel = new User();
+        $user = $userModel->getById($userId);
         require_once '../Views/edit-profile.php';
     }
 
@@ -55,11 +65,11 @@ class UserController
             if ($user === false) {
                 return "Username or password is incorrect";
             } else {
-                $passwordDb = $user["password"];
+                $passwordDb = $user->getPassword();
 
                 if (password_verify($password, $passwordDb)) {
                     session_start();
-                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['user_id'] = $user->getId();
 
                     header('Location: /catalog');
 
@@ -203,7 +213,7 @@ class UserController
                 $user = $userModel->getByEmail($email);
 
                 $userId = $_SESSION['user_id'];
-                if ($user !== false && $user['id'] !== $userId) {
+                if ($user !== null && $user['id'] !== $userId) {
                     return 'Данный email уже зарегистрирован другим пользователем';
                 } else {
                     return null;

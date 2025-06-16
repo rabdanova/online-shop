@@ -1,16 +1,4 @@
-<?php
 
-session_start();
-if (isset($_SESSION['user_id'])) {
-
-    $userId = $_SESSION['user_id'];
-    $pdo = new PDO('pgsql:host=postgres;port=5432;dbname=mydb', 'user', 'pass');
-    $stmt = $pdo->query("SELECT * FROM users WHERE id = " . $userId);
-    $user = $stmt->fetch();
-} else {
-    header("Location: /login");
-}
-?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.0/css/bootstrap.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -33,7 +21,7 @@ if (isset($_SESSION['user_id'])) {
                     <div class="panel-body">
                         <div class="text-center" id="author">
                             <img src="https://cs13.pikabu.ru/avatars/1008/x1008224-564930408.png">
-                            <h3><?php echo $user['name']; ?></h3>
+                            <h3><?php echo $user->getName(); ?></h3>
                             <small class="label label-warning">Российская Федерация</small>
                             <p>Расскажите о себе</p>
                             <p class="sosmed-author">
@@ -77,14 +65,14 @@ if (isset($_SESSION['user_id'])) {
                                 <form action="" method="post">
                                     <div class="form-group">
                                         <label>Ваше имя</label>
-                                        <input type="text" class="form-control rounded" placeholder="Укажите Ваше Имя" name= "username" id = "username" value = <?php echo $user['name']; ?>>
+                                        <input type="text" class="form-control rounded" placeholder="Укажите Ваше Имя" name= "username" id = "username" value = <?php echo $user->getName(); ?>>
                                         <?php if (isset($errors['username'])): ?>
                                             <?php echo $errors['username'] ?>
                                         <?php  endif;?>
                                     </div>
                                     <div class="form-group">
                                         <label>E-mail адрес</label>
-                                        <input type="email" class="form-control rounded" placeholder="Ваш Е-майл" name= "email" id = "email" value = <?php echo $user['email']; ?>>
+                                        <input type="email" class="form-control rounded" placeholder="Ваш Е-майл" name= "email" id = "email" value = <?php echo $user->getEmail(); ?>>
                                         <?php if (isset($errors['email'])): ?>
                                             <?php echo $errors['email'] ?>
                                         <?php  endif;?>

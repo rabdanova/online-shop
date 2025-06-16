@@ -1,6 +1,7 @@
 <?php
 namespace Controllers;
 use Model\Product;
+use Model\UserProduct;
 class ProductController
 {
     public function getAddProductForm()
@@ -17,10 +18,8 @@ class ProductController
             exit;
         }
 
-
         $productModel = new Product();
         $products = $productModel->getAllProducts();
-
         require_once '../Views/catalog.php';
     }
 
@@ -42,14 +41,14 @@ class ProductController
             $userId = $_SESSION["user_id"];
 
 
-            $productModel = new Product();
-            $result = $productModel->getByTwoId($userId, $productId);
+            $UserProductModel = new UserProduct();
+            $result = $UserProductModel->getByTwoId($userId, $productId);
 
-            if ($result === false || empty($result)) {
-                $productModel->insertById($userId, $productId, $amount);
+            if (empty($result)) {
+                $UserProductModel->insertById($userId, $productId, $amount);
             } else {
-                $newAmount = $result["amount"] + $amount;
-                $productModel->updateById($userId, $productId, $newAmount);
+                $newAmount = $result->getAmount() + $amount;
+                $UserProductModel->updateById($userId, $productId, $newAmount);
             }
 
             header("Location: catalog");
@@ -84,7 +83,7 @@ class ProductController
             if (is_numeric($productId)) {
 
                 $productModel = new Product();
-                $result = $productModel->getByProductId($productId);
+                $result = $productModel->getById($productId);
 
                 if ($result === false) {
                     return "Продукта с таким id не существует";

@@ -2,6 +2,7 @@
 
 namespace Controllers;
 use Model\UserProduct;
+use Model\Product;
 class UserProductController
 {
     public function cart()
@@ -14,17 +15,18 @@ class UserProductController
         }
         $userId = $_SESSION['user_id'];
 
-        $cartModel = new UserProduct();
-        $data = $cartModel->getByUserId($userId);
+        $userProductModel = new UserProduct();
+        $productModel = new Product();
+        $data = $userProductModel->getByUserId($userId);
 
         $cart = [];
 
         foreach ($data as $product) {
 
-            $productId = $product['product_id'];
-            $result = $cartModel->getByProductId($productId);
+            $productId = $product->getProductId();
+            $result = $productModel->getByProductId($productId);
 
-            $result['amount'] = $product['amount'];
+            $result->setAmount($product->getAmount());
             $cart[] = $result;
         }
 

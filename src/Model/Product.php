@@ -3,48 +3,118 @@
 namespace Model;
 class Product extends Model
 {
-    public function getAllProducts():array
+    private int $id;
+    private string $name;
+    private string $description;
+    private int $price;
+    private string $imageUrl;
+    private int $userId;
+    private int $productId;
+    private int $amount;
+    public function getAllProducts():array|null
     {
         $stmt = $this->getPDO()->query('select * from products');
-        return $stmt->fetchAll();
+        $products = $stmt->fetchAll();
+        $arr = [];
+        foreach ($products as $product) {
+            if (!$product) {
+                return null;
+            }
+            $obj = new self();
+            $obj->id = $product["id"];
+            $obj->name = $product["name"];
+            $obj->description = $product["description"];
+            $obj->price = $product["price"];
+            $obj->imageUrl = $product["image_url"];
+
+            $arr[] = $obj;
+        }
+        return $arr;
     }
 
-    public function getByTwoId($userId, $productId):array|false
+    public function getByProductId($productId):self|null
     {
-
-        $res = $this->getPDO()->prepare("select amount from user_products where user_id=:user_id and product_id=:product_id");
-        $res->execute(['user_id' => $userId, 'product_id' => $productId]);
-        $result = $res->fetch();
-        return $result;
-    }
-
-    public function insertById($userId, $productId, $amount)
-    {
-        $res = $this->getPDO()->prepare("INSERT INTO user_products (user_id, product_id, amount) VALUES (:user_id, :product_id, :amount)");
-        $res->execute(['user_id' => $userId, 'product_id' => $productId, 'amount' => $amount]);
-    }
-
-    public function updateById($userId, $productId,$newAmount)
-    {
-        $res = $this->getPDO()->prepare("Update user_products set amount = :amount where user_id = :user_id and product_id = :product_id");
-        $res->execute(['user_id' => $userId, 'product_id' => $productId, 'amount' => $newAmount]);
-    }
-
-    public function getByProductId($productId):array|false
-    {
-        $stmt = $this->getPDO()->prepare("SELECT id from products where id = :productId");
-        $stmt->execute(['productId' => $productId]);
+        $stmt = $this->getPDO()->prepare('select * from products where id=:id');
+        $stmt->execute(['id' => $productId]);
         $result = $stmt->fetch();
 
-        return $result;
+        if ($result === false) {
+            return null;
+        }
+        $obj = new self();
+        $obj->id = $result["id"];
+        $obj->name = $result["name"];
+        $obj->description = $result["description"];
+        $obj->price = $result["price"];
+        $obj->imageUrl = $result["image_url"];
+
+        return $obj;
     }
 
-    public function getById(int $productId):array|false
+    public function getById(int $productId):self|null
     {
         $stmt = $this->getPDO()->prepare("SELECT * from products where id = :productId");
         $stmt->execute(['productId' => $productId]);
         $result = $stmt->fetch();
 
-        return $result;
+        if ($result === false) {
+            return null;
+        }
+
+        $obj = new self();
+        $obj->id = $result["id"];
+        $obj->name = $result["name"];
+        $obj->description= $result["description"];
+        $obj->price = $result["price"];
+        $obj->imageUrl = $result["image_url"];
+
+        return $obj;
     }
+
+    public function setAmount(int $amount): void
+    {
+        $this->amount = $amount;
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function getUserId(): int
+    {
+        return $this->userId;
+    }
+
+    public function getProductId(): int
+    {
+        return $this->productId;
+    }
+
+    public function getAmount(): int
+    {
+        return $this->amount;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function getPrice(): int
+    {
+        return $this->price;
+    }
+
+    public function getImageUrl(): string
+    {
+        return $this->imageUrl;
+    }
+
+
 }
