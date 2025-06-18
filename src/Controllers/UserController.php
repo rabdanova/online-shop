@@ -2,8 +2,15 @@
 namespace Controllers;
 use Model\User;
 
-class UserController
+class UserController extends BaseController
 {
+    private User $userModel;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->userModel = new User();
+    }
     public function getRegistrate()
     {
         require_once '../Views/registration.php';
@@ -16,16 +23,13 @@ class UserController
 
     public function getEditForm()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->authService->check()) {
             header("Location: /login");
         }
 
-        $userId = $_SESSION['user_id'];
-        $userModel = new User();
-        $user = $userModel->getById($userId);
+        $user = $this->authService->getCurrentUser();
+
+        $this->userModel->getById($user->getId());
         require_once '../Views/edit-profile.php';
     }
 
@@ -40,8 +44,7 @@ class UserController
 
             $password = password_hash($password, PASSWORD_DEFAULT);
 
-            $userModel = new User();
-            $userModel->insertData($name,$email,$password);
+            $this->userModel->insertData($name,$email,$password);
 
 
             header("location: /login");
@@ -55,27 +58,13 @@ class UserController
         $errors = $this->validateLogin($_POST);
 
         if (empty($errors)) {
+            $result = $this->authService->auth($_POST['email'],$_POST['password']);
 
-            $email = $_POST["username"];
-            $password = $_POST["password"];
-
-            $userModel = new User();
-            $user = $userModel->getByEmail($email);
-
-            if ($user === false) {
-                return "Username or password is incorrect";
+            if ($result === true) {
+                header('Location: /catalog');
+                exit;
             } else {
-                $passwordDb = $user->getPassword();
-
-                if (password_verify($password, $passwordDb)) {
-                    session_start();
-                    $_SESSION['user_id'] = $user->getId();
-
-                    header('Location: /catalog');
-
-                } else {
-                    return "Username or password is incorrect";
-                }
+                return "Username or password is incorrect";
             }
         }
         $this->getLogin();
@@ -83,27 +72,19 @@ class UserController
 
     public function profile()
     {
-        session_start();
-
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->authService->check()) {
             header("Location: /login");
+            exit;
         }
 
-        $userId = $_SESSION['user_id'];
-
-        $userModel = new User();
-        $user = $userModel->getById($userId);
+        $user = $this->authService->getCurrentUser();
 
         require_once '../Views/profile.php';
     }
 
     public function editProfile()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->authService->check()) {
             header("Location: /login");
             exit;
         }
@@ -114,22 +95,20 @@ class UserController
             $name = $_POST['username'];
             $email = $_POST['email'];
             $newPassword = $_POST['new_password'];
-            $userId = $_SESSION['user_id'];
+            $user = $this->authService->getCurrentUser();
 
-
-            $userModel = new User();
 
             if (isset($name) && ($name !== '')) {
-                $userModel->updateNameById($name, $userId);
+                $this->userModel->updateNameById($name, $user->getId());
             }
 
             if (isset($email) && ($email !== '')) {
-                $userModel->updateEmailById($email, $userId);
+                $this->userModel->updateEmailById($email, $user->getId());
             }
 
             if (!empty($newPassword)) {
                 $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-                $userModel->updatePasswordById($hashedPassword, $userId);
+                $this->userModel->updatePasswordById($hashedPassword, $user->getId());
             }
 
             header('Location: /profile');
@@ -142,10 +121,7 @@ class UserController
 
     public function logout()
     {
-        session_start();
-        $_SESSION = [];
-        session_destroy();
-
+        $this->authService->logout();
         header("Location: /login");
         exit;
     }
@@ -209,11 +185,10 @@ class UserController
             } else {
                 // Проверка, что email не занят другим пользователем
 
-                $userModel = new User();
-                $user = $userModel->getByEmail($email);
+                $userEmail = $this->userModel->getByEmail($email);
 
-                $userId = $_SESSION['user_id'];
-                if ($user !== null && $user['id'] !== $userId) {
+                $user = $this->authService->getCurrentUser();
+                if ($userEmail !== null && $user['id'] !== $user) {
                     return 'Данный email уже зарегистрирован другим пользователем';
                 } else {
                     return null;
@@ -228,11 +203,9 @@ class UserController
     {
         if (isset($data['old_password'])) {
             $old_password = $data['old_password'];
-            $userId = $_SESSION['user_id'];
+            $user = $this->authService->getCurrentUser();
 
-
-            $userModel = new User();
-            $userData = $userModel->getById($userId);
+            $userData = $this->userModel->getById($user->getId());
 
             $passwordDB = $userData[0]['password'];
 
@@ -340,8 +313,7 @@ class UserController
                 $message = 'Неправильный формат email';
             } else {
 
-                $userModel = new User();
-                $user = $userModel->getByEmail($email);
+                $user = $this->userModel->getByEmail($email);
                 if ($user !== false) {
                     $message = "Данный email уже зарегистрирован";
                 }

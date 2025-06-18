@@ -2,10 +2,6 @@
 
 namespace Core;
 
-use Controllers\UserController;
-use Controllers\ProductController;
-use Controllers\UserProductController;
-use Controllers\OrderController;
 class App
 {
     private array $routes = [];
@@ -34,9 +30,16 @@ class App
         }
     }
 
-    public function addRoutes(string $route, string $routeMethod, string $className, string $method)
+    public function get(string $route, string $className, string $method)
     {
-        $this->routes[$route][$routeMethod] = [
+        $this->routes[$route]['GET'] = [
+            'class' => $className,
+            'method' => $method
+        ];
+    }
+    public function post(string $route, string $className, string $method)
+    {
+        $this->routes[$route]['POST'] = [
             'class' => $className,
             'method' => $method
         ];

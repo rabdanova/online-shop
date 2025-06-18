@@ -3,28 +3,37 @@
 namespace Controllers;
 use Model\UserProduct;
 use Model\Product;
-class UserProductController
+use Service\AuthService;
+
+class UserProductController extends BaseController
 {
+    private UserProduct $userProductModel;
+    private Product $productModel;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->userProductModel = new UserProduct();
+        $this->productModel = new Product();
+    }
     public function cart()
     {
         session_start();
 
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->authService->check()) {
             header("Location: /login");
             exit;
         }
-        $userId = $_SESSION['user_id'];
+        $user = $this->authService->getCurrentUser();
 
-        $userProductModel = new UserProduct();
-        $productModel = new Product();
-        $data = $userProductModel->getByUserId($userId);
+        $data = $this->userProductModel->getByUserId($user->getId());
 
         $cart = [];
 
         foreach ($data as $product) {
 
             $productId = $product->getProductId();
-            $result = $productModel->getByProductId($productId);
+            $result = $this->productModel->getByProductId($productId);
 
             $result->setAmount($product->getAmount());
             $cart[] = $result;

@@ -14,7 +14,7 @@ class Order extends Model
     private array $products;
     public function create(string $name, string $phone, string $address, string $comment, int $userId)
     {
-        $stmt = $this->getPDO()->prepare("INSERT INTO orders (
+        $stmt = $this->getPDO()->prepare("INSERT INTO {$this->getTableName()} (
                     name, phone_number, address, comment, user_id) VALUES (:name, :phone_number, :address, :comment, :user_id) RETURNING id");
         $stmt->execute(['name' => $name, 'phone_number' => $phone, 'address' => $address, 'comment' => $comment, 'user_id' => $userId]);
 
@@ -25,7 +25,7 @@ class Order extends Model
 
     public function getByUserId($userId) :array|null
     {
-        $stmt = $this->getPDO()->prepare("SELECT * FROM orders WHERE user_id = :user_id");
+        $stmt = $this->getPDO()->prepare("SELECT * FROM {$this->getTableName()} WHERE user_id = :user_id");
         $stmt->execute(['user_id' => $userId]);
         $userOrders = $stmt->fetchAll();
         $arr = [];
@@ -96,4 +96,8 @@ class Order extends Model
         return $this->comment;
     }
 
+    protected function getTableName():string
+    {
+        return "orders";
+    }
 }

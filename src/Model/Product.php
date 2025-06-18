@@ -13,7 +13,7 @@ class Product extends Model
     private int $amount;
     public function getAllProducts():array|null
     {
-        $stmt = $this->getPDO()->query('select * from products');
+        $stmt = $this->getPDO()->query("select * from {$this->getTableName()}");
         $products = $stmt->fetchAll();
         $arr = [];
         foreach ($products as $product) {
@@ -34,7 +34,7 @@ class Product extends Model
 
     public function getByProductId($productId):self|null
     {
-        $stmt = $this->getPDO()->prepare('select * from products where id=:id');
+        $stmt = $this->getPDO()->prepare("select * from  {$this->getTableName()} where id=:id");
         $stmt->execute(['id' => $productId]);
         $result = $stmt->fetch();
 
@@ -53,7 +53,7 @@ class Product extends Model
 
     public function getById(int $productId):self|null
     {
-        $stmt = $this->getPDO()->prepare("SELECT * from products where id = :productId");
+        $stmt = $this->getPDO()->prepare("SELECT * from {$this->getTableName()} where id = :productId");
         $stmt->execute(['productId' => $productId]);
         $result = $stmt->fetch();
 
@@ -69,6 +69,10 @@ class Product extends Model
         $obj->imageUrl = $result["image_url"];
 
         return $obj;
+    }
+    protected function getTableName():string
+    {
+        return "products";
     }
 
     public function setAmount(int $amount): void

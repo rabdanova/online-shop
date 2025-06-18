@@ -15,7 +15,7 @@ class UserProduct extends Model
 
     public function getByUserId($userId):array|null
     {
-        $stmt = $this->getPDO()->prepare('select * from user_products where user_id=:user_id');
+        $stmt = $this->getPDO()->prepare("select * from {$this->getTableName()} where user_id=:user_id");
         $stmt->execute(['user_id' => $userId]);
         $data = $stmt->fetchAll();
         $arr = [];
@@ -33,9 +33,9 @@ class UserProduct extends Model
         }
         return $arr;
     }
-    public function getByTwoId($userId, $productId):self|null
+    public function getOneByProductAndUserId($userId, $productId):self|null
     {
-        $res = $this->getPDO()->prepare("select amount from user_products where user_id=:user_id and product_id=:product_id");
+        $res = $this->getPDO()->prepare("select amount from {$this->getTableName()} where user_id=:user_id and product_id=:product_id");
         $res->execute(['user_id' => $userId, 'product_id' => $productId]);
         $result = $res->fetch();
 
@@ -51,21 +51,31 @@ class UserProduct extends Model
 
     public function insertById($userId, $productId, $amount)
     {
-        $res = $this->getPDO()->prepare("INSERT INTO user_products (user_id, product_id, amount) VALUES (:user_id, :product_id, :amount)");
+        $res = $this->getPDO()->prepare("INSERT INTO {$this->getTableName()} (user_id, product_id, amount) VALUES (:user_id, :product_id, :amount)");
         $res->execute(['user_id' => $userId, 'product_id' => $productId, 'amount' => $amount]);
     }
 
     public function updateById($userId, $productId,$newAmount)
     {
-        $res = $this->getPDO()->prepare("Update user_products set amount = :amount where user_id = :user_id and product_id = :product_id");
+        $res = $this->getPDO()->prepare("Update {$this->getTableName()} set amount = :amount where user_id = :user_id and product_id = :product_id");
         $res->execute(['user_id' => $userId, 'product_id' => $productId, 'amount' => $newAmount]);
     }
 
 
     public function deleteByUserId(int $userId)
     {
-        $stmt = $this->getPDO()->prepare('delete from user_products where user_id=:user_id');
+        $stmt = $this->getPDO()->prepare("delete from {$this->getTableName()} where user_id=:user_id");
         $stmt->execute(['user_id' => $userId]);
+    }
+
+    public function deleteOneByProductAndUserId(int $productId, $userId)
+    {
+        $stmt = $this->getPDO()->prepare("delete from {$this->getTableName()} where user_id = :user_id and product_id=:product_id");
+        $stmt->execute(['product_id' => $productId, 'user_id' => $userId]);
+    }
+    protected function getTableName():string
+    {
+        return "user_products";
     }
 
     public function setAmount(int $amount): void

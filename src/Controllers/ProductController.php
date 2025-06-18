@@ -2,33 +2,33 @@
 namespace Controllers;
 use Model\Product;
 use Model\UserProduct;
-class ProductController
-{
-    public function getAddProductForm()
-    {
-        require_once '../Views/add-product.php';
-    }
+use Service\AuthService;
 
+class ProductController extends BaseController
+{
+    private Product $productModel;
+    private UserProduct $userProductModel;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->userProductModel = new UserProduct();
+        $this->productModel = new Product();
+    }
     public function catalog()
     {
-        session_start();
-
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->authService->check()) {
             header("Location: /login");
             exit;
         }
 
-        $productModel = new Product();
-        $products = $productModel->getAllProducts();
+        $products = $this->productModel->getAllProducts();
         require_once '../Views/catalog.php';
     }
 
     public function addProduct()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->authService->check()) {
             header('Location: ./login.php');
             exit;
         }
@@ -36,25 +36,54 @@ class ProductController
         $errors = $this->Validate($_POST);
 
         if (empty($errors)) {
-            $amount = $_POST["amount"];
+            $amount = 1;
             $productId = $_POST["product_id"];
-            $userId = $_SESSION["user_id"];
+            $user = $this->authService->getCurrentUser();
 
 
-            $UserProductModel = new UserProduct();
-            $result = $UserProductModel->getByTwoId($userId, $productId);
+            $result = $this->userProductModel->getOneByProductAndUserId($user->getId(), $productId);
 
             if (empty($result)) {
-                $UserProductModel->insertById($userId, $productId, $amount);
+                $this->userProductModel->insertById($user->getId(), $productId, $amount);
             } else {
                 $newAmount = $result->getAmount() + $amount;
-                $UserProductModel->updateById($userId, $productId, $newAmount);
+                $this->userProductModel->updateById($user->getId(), $productId, $newAmount);
             }
 
             header("Location: catalog");
 
-        } else {
-            require_once '../Views/add-product.php';
+        }
+    }
+
+    public function decreaseProduct()
+    {
+        if (!$this->authService->check()) {
+            header('Location: ./login.php');
+            exit;
+        }
+
+        $errors = $this->Validate($_POST);
+
+        if (empty($errors)) {
+            $productId = $_POST["product_id"];
+            $user = $this->authService->getCurrentUser();
+            $amount = 1;
+
+            $result = $this->userProductModel->getOneByProductAndUserId($user->getId(), $productId);
+
+            if (!empty($result)) {
+                $newAmount = $result->getAmount() - $amount;
+                    if ($newAmount >= 1 )
+                    {
+                        $this->userProductModel->updateById($user->getId(), $productId, $newAmount);
+                    } else
+                    {
+                        $this->userProductModel->deleteOneByProductAndUserId($productId, $user->getId());
+                    }
+            }
+
+            header("Location: catalog");
+
         }
     }
 
@@ -67,11 +96,6 @@ class ProductController
             $errors['product_id'] = $errorProductId;
         }
 
-        $errorAmount = $this->ValidateAmount($data);
-        if (!empty($errorAmount)) {
-            $errors['amount'] = $errorAmount;
-        }
-
         return $errors;
     }
 
@@ -82,8 +106,7 @@ class ProductController
 
             if (is_numeric($productId)) {
 
-                $productModel = new Product();
-                $result = $productModel->getById($productId);
+                $result = $this->productModel->getById($productId);
 
                 if ($result === false) {
                     return "Продукта с таким id не существует";
@@ -98,23 +121,5 @@ class ProductController
         }
     }
 
-    private function ValidateAmount($data): string|null
-    {
-        if (isset($data['amount'])) {
-            $amount = $data['amount'];
-
-            if (!is_numeric($amount)) {
-                return 'Введите число';
-            } else {
-                if ($amount > 0) {
-                    return null;
-                } else {
-                    return 'Введите положительное число';
-                }
-            }
-        } else {
-            return 'Введите количество желаемого товара';
-        }
-    }
 }
 

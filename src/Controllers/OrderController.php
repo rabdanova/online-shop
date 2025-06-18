@@ -6,16 +6,17 @@ use Model\UserProduct;
 use Model\Order;
 use Model\OrderProduct;
 use Model\Product;
+use Service\AuthService;
 
-class OrderController
+class OrderController extends BaseController
 {
     private UserProduct $userProductModel;
     private Order $orderModel;
     private Product $productModel;
     private OrderProduct $orderProductModel;
-
     public function __construct()
     {
+        parent::__construct();
         $this->userProductModel = new UserProduct();
         $this->orderModel = new Order();
         $this->productModel = new Product();
@@ -24,17 +25,14 @@ class OrderController
 
     public function getCheckoutForm()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->authService->check()) {
             header('Location: ./login.php');
             exit;
         }
 
-        $userId = $_SESSION["user_id"];
+        $user = $this->authService->getCurrentUser();
 
-        $userProducts = $this->userProductModel->getByUserId($userId);
+        $userProducts = $this->userProductModel->getByUserId($user->getId());
 
         $userProductsForOrder = [];
         $totalSum = 0;
@@ -64,10 +62,7 @@ class OrderController
     }
     public function handleCheckout()
     {
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-        if (!isset($_SESSION['user_id'])) {
+        if (!$this->authService->check()) {
             header('Location: ./login.php');
             exit;
         }
@@ -79,11 +74,11 @@ class OrderController
             $phone = $_POST["phone_number"];
             $address = $_POST["address"];
             $comment = $_POST["comment"];
-            $userId = $_SESSION["user_id"];
+            $user = $this->authService->getCurrentUser();
 
-            $orderId = $this->orderModel->create($name, $phone, $address, $comment, $userId);
+            $orderId = $this->orderModel->create($name, $phone, $address, $comment, $user->getId());
 
-            $userProducts = $this->userProductModel->getByUserId($userId);
+            $userProducts = $this->userProductModel->getByUserId($user);
 
             foreach ($userProducts as $userProduct) {
                 $productId = $userProduct->getProductId();
@@ -92,7 +87,7 @@ class OrderController
                 $this->orderProductModel->create($orderId, $productId, $amount);
             }
 
-            $this->userProductModel->deleteByUserId($userId);
+            $this->userProductModel->deleteByUserId($user->getId());
 
             header("location: /catalog");
         } else {
@@ -101,16 +96,14 @@ class OrderController
     }
 
     public function getUserOrders(){
-        if (session_status() !== PHP_SESSION_ACTIVE) {
-            session_start();
-        }
-        if (!isset($_SESSION['user_id'])) {
+
+        if (!$this->authService->check()) {
             header('Location: ./login.php');
             exit;
         }
-        $userId = $_SESSION["user_id"];
+        $user = $this->authService->getCurrentUser();
 
-        $userOrders = $this->orderModel->getByUserId($userId);
+        $userOrders = $this->orderModel->getByUserId($user->getId());
 
         $newUserOrders = [];
 
@@ -134,9 +127,7 @@ class OrderController
             $userOrder->setProducts($newOrderProducts);
             $newUserOrders[] = $userOrder;
         }
-//        echo "<pre>";
-//        print_r($newUserOrders);
-//        exit;
+
         require_once "../Views/UserOrders_form.php";
     }
 

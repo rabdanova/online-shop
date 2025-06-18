@@ -12,7 +12,7 @@
                     <p class="card-text text-muted"><?php echo $product->getName();?></p>
                     <a href="#"><h5 class="card-title"><?php echo $product->getDescription();?></h5></a>
                     <div class="card-price">
-                        <?php echo $product->getPrice();?>
+                        <?php echo $product->getPrice() . 'руб';?>
                     </div>
                 </div>
         </div>
@@ -24,21 +24,24 @@
                 <link rel="stylesheet" href="style.css">
             </head>
             <body>
+            <div class="quantity-controls">
                 <form action='add-product' method="POST">
                     <div class="field">
                         <input type="hidden" name= "product_id" value = "<?php echo $product->getId(); ?> "id = "product_id" required>
                     </div>
                     <div class="field">
-                        <input type="text"  name="amount" id = "amount" required>
-                        <label>Количество</label>
-                        <?php if (isset($errors['amount'])): ?>
-                            <?php echo $errors['amount'] ?>
-                        <?php  endif;?>
-                    </div>
-                    <div class="field">
-                        <input type="submit" value="Confirm">
+                        <input type="submit" value="+">
                     </div>
                 </form>
+                <form action='decrease-product' method="POST">
+                    <div class="field">
+                        <input type="hidden" name= "product_id" value = "<?php echo $product->getId(); ?> "id = "product_id" required>
+                    </div>
+                    <div class="field">
+                        <input type="submit" value="-">
+                    </div>
+                </form>
+            </div>
         </div>
     <?php endforeach; ?>
     </div>
@@ -71,7 +74,14 @@
         box-shadow: 1px 2px 10px lightgray;
         transition: 0.2s;
     }
-
+    .quantity-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* расстояние между кнопками */
+    }
+    .quantity-controls form {
+        margin: 0; /* убираем отступы, если есть */
+    }
     .card-header {
         font-size: 13px;
         color: gray;
