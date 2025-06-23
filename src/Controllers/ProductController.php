@@ -1,19 +1,20 @@
 <?php
 namespace Controllers;
 use Model\Product;
+use Model\Review;
 use Model\UserProduct;
 use Service\AuthService;
 
 class ProductController extends BaseController
 {
     private Product $productModel;
-    private UserProduct $userProductModel;
+    private Review $reviewModel;
 
     public function __construct()
     {
         parent::__construct();
-        $this->userProductModel = new UserProduct();
         $this->productModel = new Product();
+        $this->reviewModel = new Review();
     }
     public function catalog()
     {
@@ -26,100 +27,36 @@ class ProductController extends BaseController
         require_once '../Views/catalog.php';
     }
 
-    public function addProduct()
+
+    public function getProductPage()
     {
-        if (!$this->authService->check()) {
-            header('Location: ./login.php');
-            exit;
-        }
+        $productId = $_POST["product_id"];
+        $product = $this->productModel->getByProductId($productId);
 
-        $errors = $this->Validate($_POST);
+        $reviews = $this->reviewModel->getAllByProductId($productId);
 
-        if (empty($errors)) {
-            $amount = 1;
-            $productId = $_POST["product_id"];
-            $user = $this->authService->getCurrentUser();
-
-
-            $result = $this->userProductModel->getOneByProductAndUserId($user->getId(), $productId);
-
-            if (empty($result)) {
-                $this->userProductModel->insertById($user->getId(), $productId, $amount);
-            } else {
-                $newAmount = $result->getAmount() + $amount;
-                $this->userProductModel->updateById($user->getId(), $productId, $newAmount);
+        $averageRating = 0;
+        if (!empty($reviews)) {
+            $sum = 0;
+            $count = count($reviews);
+            foreach ($reviews as $review) {
+                $sum += $review->getRating();
             }
-
-            header("Location: catalog");
-
+            $averageRating = round($sum / $count, 2);
         }
+        require_once '../Views/Product-page.php';
     }
 
-    public function decreaseProduct()
+    public function addReview()
     {
-        if (!$this->authService->check()) {
-            header('Location: ./login.php');
-            exit;
-        }
+        $userId = $this->authService->getCurrentUser()->getId();
 
-        $errors = $this->Validate($_POST);
+        $this->reviewModel->create($_POST["comment"],$_POST["product_id"] ,$userId, $_POST["rating"] );
+        header("Location: catalog");
 
-        if (empty($errors)) {
-            $productId = $_POST["product_id"];
-            $user = $this->authService->getCurrentUser();
-            $amount = 1;
-
-            $result = $this->userProductModel->getOneByProductAndUserId($user->getId(), $productId);
-
-            if (!empty($result)) {
-                $newAmount = $result->getAmount() - $amount;
-                    if ($newAmount >= 1 )
-                    {
-                        $this->userProductModel->updateById($user->getId(), $productId, $newAmount);
-                    } else
-                    {
-                        $this->userProductModel->deleteOneByProductAndUserId($productId, $user->getId());
-                    }
-            }
-
-            header("Location: catalog");
-
-        }
     }
 
-    private function Validate(array $data): array
-    {
-        $errors = [];
 
-        $errorProductId = $this->ValidateProductId($data);
-        if (!empty($errorProductId)) {
-            $errors['product_id'] = $errorProductId;
-        }
-
-        return $errors;
-    }
-
-    private function ValidateProductId($data): string|null
-    {
-        if (isset($data['product_id'])) {
-            $productId = $data['product_id'];
-
-            if (is_numeric($productId)) {
-
-                $result = $this->productModel->getById($productId);
-
-                if ($result === false) {
-                    return "Продукта с таким id не существует";
-                } else {
-                    return NUll;
-                }
-            } else {
-                return "Неправильный формат id";
-            }
-        } else {
-            return 'Введите id продукта';
-        }
-    }
 
 }
 

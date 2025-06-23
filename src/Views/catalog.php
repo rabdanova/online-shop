@@ -41,6 +41,14 @@
                         <input type="submit" value="-">
                     </div>
                 </form>
+                <form action='/product-page' method="POST">
+                    <div class="field">
+                        <input type="hidden" name= "product_id" value = "<?php echo $product->getId(); ?> "id = "product_id" required>
+                    </div>
+                    <div class="field">
+                        <input type="submit" value="Подробнее">
+                    </div>
+                </form>
             </div>
         </div>
     <?php endforeach; ?>

@@ -188,7 +188,7 @@ class UserController extends BaseController
                 $userEmail = $this->userModel->getByEmail($email);
 
                 $user = $this->authService->getCurrentUser();
-                if ($userEmail !== null && $user['id'] !== $user) {
+                if ($userEmail !== null && $userEmail->getId() !== $user->getId()) {
                     return 'Данный email уже зарегистрирован другим пользователем';
                 } else {
                     return null;
@@ -252,8 +252,8 @@ class UserController extends BaseController
     {
         $errors = [];
 
-        if (!isset($data['username'])) {
-            $errors['username'] = 'Username is required';
+        if (!isset($data['email'])) {
+            $errors['email'] = 'Email is required';
         }
         if (!isset($data['password'])) {
             $errors['password'] = 'Password is required';
@@ -314,7 +314,7 @@ class UserController extends BaseController
             } else {
 
                 $user = $this->userModel->getByEmail($email);
-                if ($user !== false) {
+                if ($user !== null) {
                     $message = "Данный email уже зарегистрирован";
                 }
             }

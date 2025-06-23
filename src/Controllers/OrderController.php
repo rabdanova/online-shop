@@ -2,11 +2,13 @@
 
 namespace Controllers;
 
+use DTO\OrderCreateDTO;
 use Model\UserProduct;
 use Model\Order;
 use Model\OrderProduct;
 use Model\Product;
 use Service\AuthService;
+use Service\OrderService;
 
 class OrderController extends BaseController
 {
@@ -14,6 +16,7 @@ class OrderController extends BaseController
     private Order $orderModel;
     private Product $productModel;
     private OrderProduct $orderProductModel;
+    private OrderService $orderService;
     public function __construct()
     {
         parent::__construct();
@@ -21,6 +24,7 @@ class OrderController extends BaseController
         $this->orderModel = new Order();
         $this->productModel = new Product();
         $this->orderProductModel = new OrderProduct();
+        $this->orderService = new OrderService();
     }
 
     public function getCheckoutForm()
@@ -62,36 +66,21 @@ class OrderController extends BaseController
     }
     public function handleCheckout()
     {
-        if (!$this->authService->check()) {
+        if ($this->authService->check()) {
+            $data = $_POST;
+            $errors = $this->validateOrder($data);
+            $user = $this->authService->getCurrentUser()->getId();
+
+            if (empty($errors)) {
+                $dto = new OrderCreateDTO($data['name'], $data['phone_number'],$data['comment'], $data['address'], $user);
+                $this->orderService->createOrder($dto);
+                header("location: /catalog");
+            }  else {
+                print_r($errors);
+            }
+        } else {
             header('Location: ./login.php');
             exit;
-        }
-
-        $errors = $this->validateOrder($_POST);
-
-        if (empty($errors)) {
-            $name = $_POST["name"];
-            $phone = $_POST["phone_number"];
-            $address = $_POST["address"];
-            $comment = $_POST["comment"];
-            $user = $this->authService->getCurrentUser();
-
-            $orderId = $this->orderModel->create($name, $phone, $address, $comment, $user->getId());
-
-            $userProducts = $this->userProductModel->getByUserId($user);
-
-            foreach ($userProducts as $userProduct) {
-                $productId = $userProduct->getProductId();
-                $amount = $userProduct->getAmount();
-
-                $this->orderProductModel->create($orderId, $productId, $amount);
-            }
-
-            $this->userProductModel->deleteByUserId($user->getId());
-
-            header("location: /catalog");
-        } else {
-            print_r($errors);
         }
     }
 

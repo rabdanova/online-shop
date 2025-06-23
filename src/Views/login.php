@@ -7,9 +7,9 @@
             <h1 class="opacity">LOGIN</h1>
 
             <form action="" method="POST">
-                <input type="text" placeholder="USERNAME" name= "username" id = "username" required>
-                <?php if (isset($errors['username'])): ?>
-                    <?php echo $errors['username'] ?>
+                <input type="text" placeholder="EMAIL" name= "email" id = "email" required>
+                <?php if (isset($errors['email'])): ?>
+                    <?php echo $errors['email'] ?>
                 <?php  endif;?>
                 <input type="password" placeholder="PASSWORD" name= "password" id = "password" required>
                 <?php if (isset($errors['password'])): ?>
