@@ -15,29 +15,29 @@ class CartService
     public function addProduct(CartDTO $data)
     {
         $amount = 1;
-        $result = $this->userProductModel->getOneByProductAndUserId($data->getUserId(), $data->getProductId());
+        $result = $this->userProductModel->getOneByProductAndUserId($data->getUser()->getId(), $data->getProductId());
 
         if (empty($result)) {
-            $this->userProductModel->insertById($data->getUserId(), $data->getProductId(), $amount);
+            $this->userProductModel->insertById($data->getUser()->getId(), $data->getProductId(), $amount);
         } else {
             $newAmount = $result->getAmount() + $amount;
-            $this->userProductModel->updateById($data->getUserId(), $data->getProductId(), $newAmount);
+            $this->userProductModel->updateById($data->getUser()->getId(), $data->getProductId(), $newAmount);
         }
     }
 
     public function decreaseProduct(CartDTO $data)
     {
         $amount = 1;
-        $result = $this->userProductModel->getOneByProductAndUserId($data->getUserId(), $data->getProductId());
+        $result = $this->userProductModel->getOneByProductAndUserId($data->getUser()->getId(), $data->getProductId());
 
         if (!empty($result)) {
             $newAmount = $result->getAmount() - $amount;
             if ($newAmount >= 1 )
             {
-                $this->userProductModel->updateById($data->getUserId(), $data->getProductId(), $newAmount);
+                $this->userProductModel->updateById($data->getUser()->getId(), $data->getProductId(), $newAmount);
             } else
             {
-                $this->userProductModel->deleteOneByProductAndUserId($data->getUserId(), $data->getProductId());
+                $this->userProductModel->deleteOneByProductAndUserId($data->getProductId(),$data->getUser()->getId());
             }
         }
     }

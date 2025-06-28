@@ -64,12 +64,11 @@ class OrderController extends BaseController
         }
         require_once "./../Views/Order_form.php";
     }
-    public function handleCheckout()
+    public function handleCheckout(array $data)
     {
         if ($this->authService->check()) {
-            $data = $_POST;
             $errors = $this->validateOrder($data);
-            $user = $this->authService->getCurrentUser()->getId();
+            $user = $this->authService->getCurrentUser();
 
             if (empty($errors)) {
                 $dto = new OrderCreateDTO($data['name'], $data['phone_number'],$data['comment'], $data['address'], $user);

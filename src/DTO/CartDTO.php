@@ -2,11 +2,12 @@
 
 namespace DTO;
 
+use Model\User;
 use Model\UserProduct;
 
 class CartDTO
 {
-    public function __construct(private int $productId, private int $userId){
+    public function __construct(private User $user, private int $productId){
 
     }
 
@@ -15,9 +16,9 @@ class CartDTO
         return $this->productId;
     }
 
-    public function getUserId(): int
+    public function getUser(): User
     {
-        return $this->userId;
+        return $this->user;
     }
 
 

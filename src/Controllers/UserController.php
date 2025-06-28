@@ -1,6 +1,9 @@
 <?php
 namespace Controllers;
 use Model\User;
+use Request\ChangeProfileRequest;
+use Request\LoginRequest;
+use Request\RegistrateRequest;
 
 class UserController extends BaseController
 {
@@ -33,19 +36,15 @@ class UserController extends BaseController
         require_once '../Views/edit-profile.php';
     }
 
-    public function registrate()
+    public function registrate(RegistrateRequest $request)
     {
-        $errors = $this->isValidData($_POST);
+        $errors = $request->IsValidData();
 
         if (empty($errors)) {
-            $name = $_POST['username'];
-            $email = $_POST['email'];
-            $password = $_POST['password'];
 
-            $password = password_hash($password, PASSWORD_DEFAULT);
+            $password = password_hash($request->getPassword(), PASSWORD_DEFAULT);
 
-            $this->userModel->insertData($name,$email,$password);
-
+            $this->userModel->insertData($request->getName(),$request->getEmail(),$request->getPassword());
 
             header("location: /login");
         } else {
@@ -53,12 +52,12 @@ class UserController extends BaseController
         }
     }
 
-    public function login()
+    public function login(LoginRequest $request)
     {
-        $errors = $this->validateLogin($_POST);
+        $errors = $request->validateLogin();
 
         if (empty($errors)) {
-            $result = $this->authService->auth($_POST['email'],$_POST['password']);
+            $result = $this->authService->auth($request->getEmail(),$request->getPassword());
 
             if ($result === true) {
                 header('Location: /catalog');
@@ -82,32 +81,29 @@ class UserController extends BaseController
         require_once '../Views/profile.php';
     }
 
-    public function editProfile()
+    public function editProfile(ChangeProfileRequest $request)
     {
         if (!$this->authService->check()) {
             header("Location: /login");
             exit;
         }
 
-        $errors = $this->validateEditProfile($_POST);
+        $errors = $request->validateEditProfile();
 
         if (empty($errors)) {
-            $name = $_POST['username'];
-            $email = $_POST['email'];
-            $newPassword = $_POST['new_password'];
+
             $user = $this->authService->getCurrentUser();
 
-
-            if (isset($name) && ($name !== '')) {
-                $this->userModel->updateNameById($name, $user->getId());
+            if ($request->getName() !== '') {
+                $this->userModel->updateNameById($request->getName(), $user->getId());
             }
 
-            if (isset($email) && ($email !== '')) {
-                $this->userModel->updateEmailById($email, $user->getId());
+            if ($request->getEmail() !== '') {
+                $this->userModel->updateEmailById($request->getEmail(), $user->getId());
             }
 
-            if (!empty($newPassword)) {
-                $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+            if (!empty($request->getNewPassword())) {
+                $hashedPassword = password_hash($request->getNewPassword(), PASSWORD_DEFAULT);
                 $this->userModel->updatePasswordById($hashedPassword, $user->getId());
             }
 
@@ -126,228 +122,6 @@ class UserController extends BaseController
         exit;
     }
 
-    private function validateEditProfile(array $data): array
-    {
-        $errors = [];
-
-        if (isset($data['username']) && $data['username'] != '') {
-            $errorName = $this->validateNameEdit($data);
-            if (!empty($errorName)) {
-                $errors['username'] = $errorName;
-            }
-        }
-        if (isset($data['email']) && $data['email'] != '') {
-            $errorEmail = $this->validateEmailEdit($data);
-            if (!empty($errorEmail)) {
-                $errors['email'] = $errorEmail;
-            }
-        }
-
-        if (isset($data['new_password']) && $data['new_password'] != '') {
-            $errorPassword = $this->validateOldPasswordEdit($data);
-            if (!empty($errorPassword)) {
-                $errors['old_password'] = $errorPassword;
-            }
-        }
-
-        if (isset($data['new_password']) && $data['new_password'] != '') {
-            $errorNewPassword = $this->validateNewPasswordEdit($data);
-            if (!empty($errorNewPassword)) {
-                $errors['new_password'] = $errorNewPassword;
-            }
-        }
-
-        return $errors;
-    }
-
-    private function validateNameEdit(array $data): null|string
-    {
-        if (isset($data['username'])) {
-            $name = $data['username'];
-            if (strlen($name) <= 3) {
-                return 'Недопустимая длина имени';
-            } else {
-                return null;
-            }
-        } else {
-            return 'Введите имя пользователя';
-        }
-    }
-
-    private function validateEmailEdit(array $data): null|string
-    {
-        if (isset($data['email'])) {
-            $email = $data['email'];
-            if (strlen($email) <= 4) {
-                return 'Слишком короткий почтовый адрес';
-            } elseif (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-                return 'Неправильный формат email';
-            } else {
-                // Проверка, что email не занят другим пользователем
-
-                $userEmail = $this->userModel->getByEmail($email);
-
-                $user = $this->authService->getCurrentUser();
-                if ($userEmail !== null && $userEmail->getId() !== $user->getId()) {
-                    return 'Данный email уже зарегистрирован другим пользователем';
-                } else {
-                    return null;
-                }
-            }
-        } else {
-            return 'Введите email';
-        }
-    }
-
-    private function validateOldPasswordEdit($data): null|string
-    {
-        if (isset($data['old_password'])) {
-            $old_password = $data['old_password'];
-            $user = $this->authService->getCurrentUser();
-
-            $userData = $this->userModel->getById($user->getId());
-
-            $passwordDB = $userData[0]['password'];
-
-            if (password_verify($old_password, $passwordDB)) {
-                return null;
-            } else {
-                return 'Введенный пароль не совпадает со старым';
-            }
-
-        } else {
-            return 'Введите старый пароль';
-        }
-    }
-
-    private function validateNewPasswordEdit(array $data): null|string
-    {
-        if (!empty($data['new_password'])) {
-
-            $password = $data['new_password'];
-
-            if (strlen($password) <= 5) {
-                return 'Недопустимая длина нового пароля (минимум 6 символов)';
-            }
-
-            if (isset($data['repeat_password'])) {
-
-                $repeatPassword = $data['repeat_password'];
-
-                if ($repeatPassword !== $password) {
-                    return 'Пароли не совпадают';
-                } else {
-                    return null;
-                }
-            } else {
-                return 'Подтвердите новый пароль';
-            }
-
-        } else {
-            return 'Введите новый пароль';
-        }
-    }
-
-    private function validateLogin(array $data): array
-    {
-        $errors = [];
-
-        if (!isset($data['email'])) {
-            $errors['email'] = 'Email is required';
-        }
-        if (!isset($data['password'])) {
-            $errors['password'] = 'Password is required';
-        }
-        return $errors;
-    }
-
-    private function IsValidData(array $data): array
-    {
-        $errors = [];
-
-        $errorName = $this->validateName($data);
-        if (!empty($errorName)) {
-            $errors['name'] = $errorName;
-        }
-
-        $errorEmail = $this->validateEmail($data);
-        if (!empty($errorEmail)) {
-            $errors['email'] = $errorEmail;
-        }
-
-        $errorPassword = $this->validatePassword($data);
-        if (!empty($errorPassword)) {
-            $errors['password'] = $errorPassword;
-        }
-
-        return $errors;
-    }
-
-    private function validateName(array $data): null|string
-    {
-        if (isset($data['username'])) {
-            $name = $data['username'];
-            if ((strlen($name) <= 3)) {
-                return 'Недопустимая длина имени';
-            } else {
-                return NULL;
-            }
-
-        } else {
-            return 'Введите имя пользователя';
-        }
-    }
-
-    private function validateEmail(array $data): null|string
-    {
-        $message = null;
-
-        if (isset($data['email'])) {
-
-            $email = $data['email'];
-
-            if (strlen($email) <= 4) {
-                $message = 'Слишком короткий почтовый адрес';
-
-            } elseif (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-                $message = 'Неправильный формат email';
-            } else {
-
-                $user = $this->userModel->getByEmail($email);
-                if ($user !== null) {
-                    $message = "Данный email уже зарегистрирован";
-                }
-            }
-        } else {
-            $message = 'Введите email';
-        }
-
-        return $message;
-    }
-
-    private function validatePassword(array $data): string|null
-    {
-        $message = null;
-
-        if (isset($data['password'])) {
-            $password = $data['password'];
-
-            if (strlen($password) <= 5) {
-                $message = 'Недопустимая длина пароля';
-            }
-            if (isset($data['repeat-pas'])) {
-                $repeatPassword = $data['repeat-pas'];
-
-                if ($repeatPassword !== $password) {
-                    $message = 'Пароли не совпадают';
-                }
-            }
 
 
-        } else {
-            $message = 'Недопустимая длина пароля';
-        }
-
-        return $message;
-    }
 }

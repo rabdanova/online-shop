@@ -4,7 +4,8 @@ namespace Controllers;
 use DTO\CartDTO;
 use Model\UserProduct;
 use Model\Product;
-use Service\AuthService;
+use Request\AddProductRequest;
+use Request\DecreaseProductRequest;
 use Service\CartService;
 
 class UserProductController extends BaseController
@@ -46,15 +47,14 @@ class UserProductController extends BaseController
         require_once '../Views/userProducts.php';
     }
 
-    public function addProduct()
+    public function addProduct(AddProductRequest $request)
     {
         if ($this->authService->check()) {
-            $user = $this->authService->getCurrentUser()->getId();
-            $data = $_POST;
-            $errors = $this->validate($data);
+            $user = $this->authService->getCurrentUser();
+            $errors = $request->validate();
 
             if (empty($errors)) {
-                $dto = new CartDTO($user, $data['product_id']);
+                $dto = new CartDTO($user, $request->getProductId());
                 $this->cartService->addProduct($dto);
                 header("Location: catalog");
             }
@@ -64,15 +64,14 @@ class UserProductController extends BaseController
         }
     }
 
-    public function decreaseProduct()
+    public function decreaseProduct(DecreaseProductRequest $request)
     {
         if ($this->authService->check()) {
             $user = $this->authService->getCurrentUser();
-            $data = $_POST;
-            $errors = $this->validate($data);
+            $errors = $request->validate();
 
             if (empty($errors)) {
-                $dto = new CartDTO($user, $data['product_id']);
+                $dto = new CartDTO($user, $request->getProductId());
                 $this->cartService->decreaseProduct($dto);
                 header("Location: catalog");
             }
@@ -82,37 +81,5 @@ class UserProductController extends BaseController
         }
     }
 
-    private function validate(array $data): array
-    {
-        $errors = [];
 
-        $errorProductId = $this->validateProductId($data);
-        if (!empty($errorProductId)) {
-            $errors['product_id'] = $errorProductId;
-        }
-
-        return $errors;
-    }
-
-    private function validateProductId($data): string|null
-    {
-        if (isset($data['product_id'])) {
-            $productId = $data['product_id'];
-
-            if (is_numeric($productId)) {
-
-                $result = $this->productModel->getById($productId);
-
-                if ($result === false) {
-                    return "Продукта с таким id не существует";
-                } else {
-                    return NUll;
-                }
-            } else {
-                return "Неправильный формат id";
-            }
-        } else {
-            return 'Введите id продукта';
-        }
-    }
 }

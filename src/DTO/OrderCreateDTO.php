@@ -2,6 +2,8 @@
 
 namespace DTO;
 
+use Model\User;
+
 class OrderCreateDTO
 {
     public function __construct(

@@ -68,7 +68,7 @@ class UserProduct extends Model
         $stmt->execute(['user_id' => $userId]);
     }
 
-    public function deleteOneByProductAndUserId(int $productId, $userId)
+    public function deleteOneByProductAndUserId(int $productId, int $userId)
     {
         $stmt = $this->getPDO()->prepare("delete from {$this->getTableName()} where user_id = :user_id and product_id=:product_id");
         $stmt->execute(['product_id' => $productId, 'user_id' => $userId]);

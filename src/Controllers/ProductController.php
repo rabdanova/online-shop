@@ -3,6 +3,8 @@ namespace Controllers;
 use Model\Product;
 use Model\Review;
 use Model\UserProduct;
+use Request\AddProductRequest;
+use Request\AddReviewRequest;
 use Service\AuthService;
 
 class ProductController extends BaseController
@@ -28,9 +30,9 @@ class ProductController extends BaseController
     }
 
 
-    public function getProductPage()
+    public function getProductPage(AddReviewRequest $request)
     {
-        $productId = $_POST["product_id"];
+        $productId = $request->getProductId();
         $product = $this->productModel->getByProductId($productId);
 
         $reviews = $this->reviewModel->getAllByProductId($productId);
@@ -47,16 +49,13 @@ class ProductController extends BaseController
         require_once '../Views/Product-page.php';
     }
 
-    public function addReview()
+    public function addReview(AddReviewRequest $request)
     {
         $userId = $this->authService->getCurrentUser()->getId();
 
-        $this->reviewModel->create($_POST["comment"],$_POST["product_id"] ,$userId, $_POST["rating"] );
+        $this->reviewModel->create($request->getComment(),$request->getProductId(),$userId, $request->getRating());
         header("Location: catalog");
 
     }
-
-
-
 }
 
