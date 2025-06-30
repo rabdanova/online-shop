@@ -28,6 +28,6 @@ $app->post('/addReview',ProductController::class, 'addReview', \Request\AddRevie
 $app->post('/add-product',UserProductController::class, 'addProduct', \Request\AddProductRequest::class);
 $app->get('/cart',UserProductController::class, 'cart');
 $app->get('/create-order',OrderController::class, 'getCheckoutForm');
-$app->post('/create-order',OrderController::class, 'handleCheckout');
+$app->post('/create-order',OrderController::class, 'handleCheckout', \Request\CreateOrderRequest::class);
 $app->get('/my-orders',OrderController::class, 'getUserOrders');
 $app->run();

@@ -50,11 +50,10 @@ class UserProductController extends BaseController
     public function addProduct(AddProductRequest $request)
     {
         if ($this->authService->check()) {
-            $user = $this->authService->getCurrentUser();
             $errors = $request->validate();
 
             if (empty($errors)) {
-                $dto = new CartDTO($user, $request->getProductId());
+                $dto = new CartDTO($request->getProductId());
                 $this->cartService->addProduct($dto);
                 header("Location: catalog");
             }

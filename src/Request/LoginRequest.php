@@ -2,14 +2,10 @@
 
 namespace Request;
 
-use Model\User;
-
 class LoginRequest
 {
-    private User $userModel;
     public function __construct(private array $data)
     {
-        $this->userModel = new User();
     }
 
     public function getEmail() : string
@@ -26,10 +22,10 @@ class LoginRequest
     {
         $errors = [];
 
-        if (!isset($this->data['email'])) {
+        if (empty($this->data['email'])) {
             $errors['email'] = 'Email is required';
         }
-        if (!isset($this->data['password'])) {
+        if (empty($this->data['password'])) {
             $errors['password'] = 'Password is required';
         }
         return $errors;

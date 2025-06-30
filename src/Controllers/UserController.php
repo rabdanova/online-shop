@@ -44,7 +44,7 @@ class UserController extends BaseController
 
             $password = password_hash($request->getPassword(), PASSWORD_DEFAULT);
 
-            $this->userModel->insertData($request->getName(),$request->getEmail(),$request->getPassword());
+            $this->userModel->insertData($request->getName(),$request->getEmail(),$password);
 
             header("location: /login");
         } else {
@@ -63,7 +63,7 @@ class UserController extends BaseController
                 header('Location: /catalog');
                 exit;
             } else {
-                return "Username or password is incorrect";
+                echo "Username or password is incorrect";
             }
         }
         $this->getLogin();

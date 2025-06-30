@@ -3,16 +3,16 @@
 namespace Request;
 
 use Model\User;
-use Service\AuthService;
+use Service\Auth\AuthSessionService;
 
 class ChangeProfileRequest
 {
     private User $userModel;
-    private AuthService $authService;
+    private AuthSessionService $authService;
     public function __construct(private array $data)
     {
         $this->userModel = new User();
-        $this->authService = new AuthService();
+        $this->authService = new AuthSessionService();
     }
     public function getName() : string
     {

@@ -7,7 +7,7 @@ use Model\UserProduct;
 
 class CartDTO
 {
-    public function __construct(private User $user, private int $productId){
+    public function __construct(private int $productId){
 
     }
 
@@ -16,10 +16,6 @@ class CartDTO
         return $this->productId;
     }
 
-    public function getUser(): User
-    {
-        return $this->user;
-    }
 
 
 }

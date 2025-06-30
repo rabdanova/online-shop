@@ -2,10 +2,7 @@
 namespace Controllers;
 use Model\Product;
 use Model\Review;
-use Model\UserProduct;
-use Request\AddProductRequest;
 use Request\AddReviewRequest;
-use Service\AuthService;
 
 class ProductController extends BaseController
 {

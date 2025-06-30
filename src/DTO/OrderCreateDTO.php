@@ -11,7 +11,7 @@ class OrderCreateDTO
         private string $phone_number,
         private string $comment,
         private string $address,
-        private User $user) {
+    ) {
     }
     public function getName(): string
     {
@@ -32,11 +32,5 @@ class OrderCreateDTO
     {
         return $this->address;
     }
-
-    public function getUser(): User
-    {
-        return $this->user;
-    }
-
 
 }
